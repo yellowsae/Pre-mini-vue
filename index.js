@@ -74,7 +74,32 @@
 
 // version4 
 // 使用自己模拟的 响应式
-const { effectWatch, reactive } = require('./code/reactivity/index.js')
+// const { effectWatch, reactive } = require('./code/reactivity/index.js')
+
+// let a = reactive({
+//   age: 19
+// })
+
+// let b
+// effectWatch(() => {
+//   b = a.age + 10
+//   console.log(b)
+// })
+
+// a.age++
+
+// 29
+// 30
+
+
+
+
+
+// version5  
+// 使用自己模拟的 响应式 -> 在敲过4遍后
+// 重构方式
+const { effectWatch } = require('./Reconfiguration/effect')
+const { reactive } = require('./Reconfiguration/reactive')
 
 let a = reactive({
   age: 19
@@ -87,6 +112,3 @@ effectWatch(() => {
 })
 
 a.age++
-
-// 29
-// 30
