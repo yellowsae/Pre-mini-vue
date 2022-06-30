@@ -6,6 +6,6 @@
 
 
 
-#### reactive 处理 dep 部分
+#### reactive 处理 dep 的存储
 
 ![image-20220630153429894](./dep.png)
