@@ -45,16 +45,26 @@ const { effect, reactive } = require('@vue/reactivity')
 
 
 let a = reactive({
-  age: 18
+  age: 10
 })
 
 let b
 effect(() => {
-  b = a.age + 1
+  // effect 接收函数， 这个函数 初始化时候会执行一次
+  b = a.age + 10
   console.log(b)
 })
 
-
+// 当 响应式对象 a 发生变化时候 再调用一次  effect 中的函数 
 a.age = 20
+
+// 输出，   达到目的： 没有调用 effect , 当 a 发生改变时候 b 的值自动更新(有调用了一次effect)
+// 20
+// 30
+
+/**
+ * 总结： 使用 vue3 的 reactivity 响应式时， effect 函数的作用是：
+ *  初始时侯调用一次， 当响应式的对象数据发生变化时候， 再次调用，这就是 vue3 的响应式原理的核心
+ */
 
 
