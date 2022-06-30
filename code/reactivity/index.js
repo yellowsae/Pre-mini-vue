@@ -56,7 +56,7 @@ class Dep {
 
 // 实现 effect 的逻辑 
 function effectWatch(effect) {  // effect 就是要存储的依赖， 是一个函数
-  // 使用全局比哪里存储依赖
+  // 使用全局变量存储依赖
   currentEffect = effect
   effect()
   // dep.depend()  // 执行添加依赖
@@ -64,7 +64,8 @@ function effectWatch(effect) {  // effect 就是要存储的依赖， 是一个�
 }
 
 
-// let dep = new Dep(10)
+
+// let dep = new Dep(10) // 初始时候 模拟，而不是使用reactive()
 // let b
 // effectWatch(() => {
 //   b = dep.value + 10
@@ -137,6 +138,21 @@ function reactive(raw) {  // raw  被代理的对象
     }
   })
 }
+
+// 代理对象
+// const user = reactive({
+//   age: 10
+// })
+// let doubel
+// effectWatch(() => {
+//   doubel = user.age + 10
+//   console.log(doubel)
+// })
+// // 修改数据
+// user.age = 20
+// 20
+// 30
+
 
 
 //  CJS 的模块导出
