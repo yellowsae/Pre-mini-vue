@@ -64,16 +64,83 @@ function effectWatch(effect) {  // effect 就是要存储的依赖， 是一个�
 }
 
 
-let dep = new Dep(10)
-let b
-effectWatch(() => {
-  console.log('---effect---')
-  b = dep.value + 10
-  console.log(b)
-})
+// let dep = new Dep(10)
+// let b
+// effectWatch(() => {
+//   b = dep.value + 10
+//   console.log(b)
+// })
 
-dep.value = 20
+// dep.value = 20
+
+
+
+
+
+
+
+
 
 
 
 // 实现 reactive
+// reactice 将XXX 变为一个响应式
+// 因为 目前已经实现了 dep ， dep 主要针对于单个值的 number | string
+
+// 在 vue3 中 reactive 主要针对于 Obj | Array
+
+// 要怎么实现对 Obj | Array 的数据 进行一个响应式 ？
+// 1. 可以使用 Map 数据结构 (targetMap)，将对应的对象中的 key 存储起来 (depsMap)
+// 2. 达到 一个 key 对应一个  dep 的目的 
+
+
+const targetMap = new Map();  // 用于存储 target(对象)  的Map
+
+
+function getDep(target, key) {
+  let depsMap = targetMap.get(target)  // 通过对象获取 对应的 depsMap 
+  if (!depsMap) {
+    depsMap = new Map();   // depsMap 用于存储 key 对应的 dep, 它们之间的映射关系
+    targetMap.set(target, depsMap) // targetMap 写入数据，通过对象访问 depsMap 
+  }
+
+  let dep = depsMap.get(key)  // 通过 key 获取 key 对应的 dep 
+  if (!dep) {
+    dep = new Dep()  // 生成 每一个 key 对应的 dep
+    depsMap.set(key, dep)  // 
+  }
+  return dep
+}
+
+
+function reactive(raw) {  // raw  被代理的对象
+
+  // 把 raw 对象进行代理使用 Proxy
+  return new Proxy(raw, {
+    // 进行代理的逻辑
+    get(target, key) {
+
+      let dep = getDep(target, key)
+      // 2. 拿到 dep 后， 进行收集依赖 
+      dep.depend()
+      return Reflect.get(target, key)  // 将读取的值返回 
+    },
+
+    set(target, key, value) {
+
+      let dep = getDep(target, key)
+      // 结果
+      let result = Reflect.set(target, key, value)
+      // 2. 拿到 dep 后，执行触发依赖
+      dep.notice()  // 
+      return result
+    }
+  })
+}
+
+
+//  CJS 的模块导出
+module.exports = {
+  effectWatch,
+  reactive
+}

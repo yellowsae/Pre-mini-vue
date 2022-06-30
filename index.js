@@ -1,5 +1,6 @@
 
-const { effect, reactive } = require('@vue/reactivity')
+// const { effect, reactive } = require('@vue/reactivity')
+
 
 
 
@@ -44,19 +45,19 @@ const { effect, reactive } = require('@vue/reactivity')
 
 
 
-let a = reactive({
-  age: 10
-})
+// let a = reactive({
+//   age: 10
+// })
 
-let b
-effect(() => {
-  // effect 接收函数， 这个函数 初始化时候会执行一次
-  b = a.age + 10
-  console.log(b)
-})
+// let b
+// effect(() => {
+//   // effect 接收函数， 这个函数 初始化时候会执行一次
+//   b = a.age + 10
+//   console.log(b)
+// })
 
-// 当 响应式对象 a 发生变化时候 再调用一次  effect 中的函数 
-a.age = 20
+// // 当 响应式对象 a 发生变化时候 再调用一次  effect 中的函数 
+// a.age = 20
 
 // 输出，   达到目的： 没有调用 effect , 当 a 发生改变时候 b 的值自动更新(有调用了一次effect)
 // 20
@@ -68,3 +69,24 @@ a.age = 20
  */
 
 
+
+
+
+// version4 
+// 使用自己模拟的 响应式
+const { effectWatch, reactive } = require('./code/reactivity/index.js')
+
+let a = reactive({
+  age: 19
+})
+
+let b
+effectWatch(() => {
+  b = a.age + 10
+  console.log(b)
+})
+
+a.age++
+
+// 29
+// 30
