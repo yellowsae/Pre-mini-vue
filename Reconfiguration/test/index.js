@@ -28,7 +28,7 @@ class Dep {
   }
 }
 
-function effectWatch(effect) {
+export function effectWatch(effect) {
   currentEffect = effect
   effect()
   currentEffect = null
@@ -53,7 +53,7 @@ function getDep(target, key) {
   return dep
 }
 
-function reactive(raw) {
+export function reactive(raw) {
   return new Proxy(raw, {
     get(target, key) {
       let dep = getDep(target, key)
@@ -70,13 +70,13 @@ function reactive(raw) {
 }
 
 
-const user = reactive({
-  age: 10
-})
-let result
-effectWatch(() => {
-  result = user.age + 10
-  console.log(result)
-})
+// const user = reactive({
+//   age: 10
+// })
+// let result
+// effectWatch(() => {
+//   result = user.age + 10
+//   console.log(result)
+// })
 
-user.age = 20
+// user.age = 20
