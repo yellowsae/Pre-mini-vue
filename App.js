@@ -120,10 +120,10 @@
 
 // const { effectWatch, reactive }  = require('./Reconfiguration/test/index.js')
 import { effectWatch, reactive } from './code/reactivity/reactivity.js'
-
+import { h } from './code/h.js'
 
 // 导出APP
-export default  {  // const App = {} 
+export default {  // const App = {} 
 
   // template  编译 -> render 函数
   render(context) {
@@ -133,27 +133,47 @@ export default  {  // const App = {}
     // 使用 effectWatch() ， 这样才能达到 值变更后， 视图刷新 
     // effectWatch(() => {
 
-      // 目前缺点：  view  -> 每次都需要重新创建，如果 DOM很多， 则会占用很多内存
-      // 优化点： 计算出计算出最小的更新点  
-      // 引入 VDOM 虚拟DOM, 虚拟节点 -> 纯粹的JS对象  （虚拟DOM本质是 JS对象）
-      // 可以在这个JS对象，上做一些算法， -->  也就是 Diff 算法
+    // 目前缺点：  view  -> 每次都需要重新创建，如果 DOM很多， 则会占用很多内存
+    // 优化点： 计算出计算出最小的更新点  
+    // 引入 VDOM 虚拟DOM, 虚拟节点 -> 纯粹的JS对象  （虚拟DOM本质是 JS对象），引入虚拟DOM就是为了方便引入 diff, 让性能提升更高 
+    // 可以在这个JS对象，上做一些算法， -->  也就是 Diff 算法
 
-      // 清空视图 reset 
-      // document.body.innerHTML = `` 
-
-
-      // 用户 创建 的视图 -> 用户使用
-      const div = document.createElement('div') 
-      // div.innerHTML = "hello world"
-      div.innerHTML = context.state.count  // 用户操作视图
-
-      // 插入视图  root
-      // document.body.append(div)
-    // })
+    // 清空视图 reset 
+    // document.body.innerHTML = `` 
 
 
-    // effectWatch 在  App.js mount() 使用 
-    return div
+    //   // 用户 创建 的视图 -> 用户使用
+    //   const div = document.createElement('div') 
+    //   // div.innerHTML = "hello world"
+    //   div.innerHTML = context.state.count  // 用户操作视图
+
+    //   // 插入视图  root
+    //   // document.body.append(div)
+    //   // })
+
+
+    // // effectWatch 在  App.js mount() 使用 
+    // return div
+
+    // 先注释上边
+    // 分析 创建 视图的部分 
+
+    // 1. tag   标签名称
+    // 2. props  属性
+    // 3. children 子节点
+
+    // 使用 h() 函数，创建的虚拟DOM
+    return h("div", {
+      id: 'id-app',
+      class: 'class-app'
+    },
+      // 使用字符串 为子节点
+      // String(context.state.count) 
+      // 使用 数组 为子节点
+      [h('p', null, 'test1'), h('p', null, 'test2')]
+    )  // 创建虚拟DOM
+    // render 返回值 而不是 一个节点了， 而是虚拟DOM
+    // String(context.state.count) 子节点必须要为 string 或者 Array
   },
 
   setup() {  // 模拟 vue3 响应式
@@ -179,7 +199,8 @@ export default  {  // const App = {}
 
 
 
-// 目前问题： 所有做好的 函数方法 effectWatch | render 这些方法，用户不需要知道 这些执行细节
+// 目前问题： 所有做好的 函数方法 effectWatch | render() 这些方法，用户不需要知道 这些执行细节
+// 
 // 所以需要进行封装
 
 
@@ -189,4 +210,15 @@ export default  {  // const App = {}
  * 
  * render(context) 函数的作用：接收context参数， 这个参数就是 setup()的返回值
  * 然后， 在这个函数进行模板的编译，（使用到了其他函数库， 工具方法），最后返回一个视图节点。
+ */
+
+
+
+
+/**
+ * 转移前，到这里 感觉已经很像 vue 了， 但是还有很大一部分功能没有完成，
+ *  render() 函数是一个固定的， vue的render函数是一个编译 template模板后，形成一个 render() 函数
+ * 但是中间，还有将 template 编译成虚拟DOM，再把虚拟DOM转化成 render() 函数。再这里面 虚拟DOM起到一个很重要的作用（桥梁）
+ * 还有，优化方面，如果没有 diff 算法，那每次刷新都是 虚拟DOM 转为 真实DOM，就很消耗内存 。 
+ * 
  */

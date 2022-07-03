@@ -4,6 +4,8 @@
 
 
 import { effectWatch } from './reactivity/reactivity.js'
+import { mountElement } from './renderer/index.js'
+
 // 构建
 // 导出 createApp() 函数
 export function createApp(rootComponent) {  // 接收 rootComponent 根组件
@@ -15,18 +17,25 @@ export function createApp(rootComponent) {  // 接收 rootComponent 根组件
       const context = rootComponent.setup()
 
 
-      // 使用 effectWatch() 把变化的模板 给包裹起来 
+      // 使用 effectWatch() 把变化的模板 给包裹起来， 达到响应式的效果，收集依赖， 触发依赖
       effectWatch(() => {  // 这样就不需要用户自己调用 render() 和 append() 来渲染视图了
 
         rootContainer.innerHTML = ``
         // 调用 render() 函数， 把setup() 返回的数据
         // render() 执行编译模板后,  返回一个 element 节点
 
-        const element = rootComponent.render(context)
-        // 添加 编译渲染的节点 挂载 到  容器中
-        rootContainer.append(element)
-      })
+        // const element = rootComponent.render(context)  // 使用 h() 函数，创建的虚拟DOM，返回值是虚拟DOM,而不是一个节点了， 而是虚拟DOM
+       
+        // 返回的是一个虚拟DOM
+        const subTree = rootComponent.render(context)
+        // console.log(subTree) // 虚拟节点
 
+        // mountElement() 将虚拟DOM，转为真实的DOM
+        mountElement(subTree, rootContainer)  // subTree: 虚拟DOM，  rootContainer 容器
+
+        // 添加 编译渲染的节点 挂载 到  容器中
+        // rootContainer.append(subTree)
+      })
     }
   }
 }
@@ -42,4 +51,19 @@ export function createApp(rootComponent) {  // 接收 rootComponent 根组件
  *  5. 把 element 节点 添加到 根容器中， 然后再清空根容器的内容， 达到响应式页面
  *  
  * 这就是 createApp() 的执行过程, 其中setup() 和 render() 在 APP组件内部执行
+ */
+
+
+
+
+/**
+ * 第二课
+ * 在 render() 函数中引入了 VDOM 这一层，  h() 函数用于创建虚拟DOM 
+ * 
+ * 然后  mountElement() 函数再把  虚拟DOM转为真实的DOM 
+ * 
+ * 
+ * 未解决： 
+ *  - 如何从 template 转化为 虚拟DOM （需要 vue的 编译器  compiler） 
+ *  -  diff 算法
  */
