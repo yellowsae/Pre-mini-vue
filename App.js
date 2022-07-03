@@ -119,7 +119,7 @@
 // App组件实现 
 
 // const { effectWatch, reactive }  = require('./Reconfiguration/test/index.js')
-import { effectWatch, reactive } from './Reconfiguration/test/index.js'
+import { effectWatch, reactive } from './code/reactivity/reactivity.js'
 
 
 // 导出APP
@@ -143,9 +143,9 @@ export default  {  // const App = {}
 
 
       // 用户 创建 的视图 -> 用户使用
-      const div = document.createElement('div')
+      const div = document.createElement('div') 
       // div.innerHTML = "hello world"
-      div.innerHTML = context.state.count
+      div.innerHTML = context.state.count  // 用户操作视图
 
       // 插入视图  root
       // document.body.append(div)
@@ -165,7 +165,7 @@ export default  {  // const App = {}
     })
 
 
-    window.state = state
+    window.state = state  // 为了在浏览器控制台中，能够看到 state 的值
     return {
       state
     }
@@ -181,3 +181,12 @@ export default  {  // const App = {}
 
 // 目前问题： 所有做好的 函数方法 effectWatch | render 这些方法，用户不需要知道 这些执行细节
 // 所以需要进行封装
+
+
+
+/**
+ * App组中， setup() 函数的作用：是用户的写逻辑 导出数据的函数 
+ * 
+ * render(context) 函数的作用：接收context参数， 这个参数就是 setup()的返回值
+ * 然后， 在这个函数进行模板的编译，（使用到了其他函数库， 工具方法），最后返回一个视图节点。
+ */
