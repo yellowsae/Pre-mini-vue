@@ -5,6 +5,7 @@
 
 import { effectWatch } from './reactivity/reactivity.js'
 // 构建
+// 导出 createApp() 函数
 export function createApp(rootComponent) {  // 接收 rootComponent 根组件
 
   return {
