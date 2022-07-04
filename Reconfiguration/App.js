@@ -19,7 +19,7 @@ export default {
     return h(
       'div',
       {
-        id: 'id-app',
+        id: 'id-app------' + context.state.count,
         class: 'class-app'
       },
       // String(context.state.count)
