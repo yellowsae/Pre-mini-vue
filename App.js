@@ -164,13 +164,13 @@ export default {  // const App = {}
 
     // 使用 h() 函数，创建的虚拟DOM
     return h("div", {
-      id: 'id-app',
+      id: 'id-app-' + context.state.count,
       class: 'class-app'
     },
       // 使用字符串 为子节点
       // String(context.state.count) 
       // 使用 数组 为子节点
-      [h('p', null, 'test1'), h('p', null, 'test2')]
+      [h('p', null, String(context.state.count)), h('p', null, 'test2')]
     )  // 创建虚拟DOM
     // render 返回值 而不是 一个节点了， 而是虚拟DOM
     // String(context.state.count) 子节点必须要为 string 或者 Array

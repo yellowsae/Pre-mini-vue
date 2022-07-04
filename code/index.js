@@ -4,7 +4,7 @@
 
 
 import { effectWatch } from './reactivity/reactivity.js'
-import { mountElement } from './renderer/index.js'
+import { mountElement, diff } from './renderer/index.js'
 
 // 构建
 // 导出 createApp() 函数
@@ -15,23 +15,61 @@ export function createApp(rootComponent) {  // 接收 rootComponent 根组件
 
       // 调用 组件的 setup() 
       const context = rootComponent.setup()
+      // 定义一个状态代表这个东西是否被挂载过
+      let isMounted = false  // 一开始时候没有被挂载过
+
+      // 声明一个 变量 保存上一个挂载的节点, 在更新之后呢就拿到上一个的老的节点
+      let prevSubTree = null  // 上一个挂载的节点
+
+
 
 
       // 使用 effectWatch() 把变化的模板 给包裹起来， 达到响应式的效果，收集依赖， 触发依赖
       effectWatch(() => {  // 这样就不需要用户自己调用 render() 和 append() 来渲染视图了
 
-        rootContainer.innerHTML = ``
         // 调用 render() 函数， 把setup() 返回的数据
         // render() 执行编译模板后,  返回一个 element 节点
 
         // const element = rootComponent.render(context)  // 使用 h() 函数，创建的虚拟DOM，返回值是虚拟DOM,而不是一个节点了， 而是虚拟DOM
-       
-        // 返回的是一个虚拟DOM
-        const subTree = rootComponent.render(context)
-        // console.log(subTree) // 虚拟节点
 
-        // mountElement() 将虚拟DOM，转为真实的DOM
-        mountElement(subTree, rootContainer)  // subTree: 虚拟DOM，  rootContainer 容器
+
+        // 判断是否挂载过
+        if (!isMounted) {  // 如果没有被挂载过
+          // 这里就是一个初始化的过程
+          // init() 的操作，按照原来的流程来
+
+          // 把已经挂载过状态给 设置 为 true
+          isMounted = true
+
+          // 清空模板
+          rootContainer.innerHTML = ``
+
+          // 返回的是一个虚拟DOM
+          const subTree = rootComponent.render(context)
+          // console.log(subTree) // 虚拟节点
+
+          // mountElement() 将虚拟DOM，转为真实的DOM
+          mountElement(subTree, rootContainer)  // subTree: 虚拟DOM，  rootContainer 容器
+          // 把上一个挂载的节点，保存起来
+          prevSubTree = subTree
+        } else {
+          // 这里表示 已经挂载过了，那么就是更新的过程
+          // update
+
+          // 更新的节点 
+          const subTree = rootComponent.render(context)  // 虚拟节点
+
+          // 使用 diff算法
+          diff(prevSubTree, subTree) // oldVnode , newVnode
+
+          // 更新上一个的老的节点 
+          prevSubTree = subTree
+        }
+
+
+        // 在使用 diff 算法
+        // diff()  算法需要  newVnode 和 oldVnode
+
 
         // 添加 编译渲染的节点 挂载 到  容器中
         // rootContainer.append(subTree)
